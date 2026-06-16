@@ -21,8 +21,8 @@
       --muted:   #666657;
       --text:    #ede8dc;
       --text-2:  #9a9680;
-      --accent:  #c8f53e;
-      --acc-2:   #a8d025;
+      --accent:  #b14eff;
+      --acc-2:   #9333ea;
       --r:       4px;
     }
 
@@ -110,7 +110,7 @@
     .hero::after {
       content: ''; position: absolute;
       top: 15%; left: 5%; width: 55vw; height: 60vh;
-      background: radial-gradient(ellipse, rgba(200,245,62,.055) 0%, transparent 65%);
+      background: radial-gradient(ellipse, rgba(177,78,255,.09) 0%, transparent 65%);
       pointer-events: none;
     }
 
@@ -202,7 +202,7 @@
       background: var(--accent); color: var(--bg);
       font-size: .65rem; font-weight: 800; letter-spacing: .07em;
       text-transform: uppercase; padding: .3rem .65rem; border-radius: var(--r);
-      box-shadow: 0 4px 18px rgba(200,245,62,.35);
+      box-shadow: 0 4px 18px rgba(177,78,255,.35);
       animation: float 3.5s ease-in-out infinite;
     }
 
@@ -236,7 +236,7 @@
     .win-pill {
       font-size: .6rem; font-weight: 700; letter-spacing: .05em;
       text-transform: uppercase;
-      background: rgba(200,245,62,.1); color: #c8f53e;
+      background: rgba(177,78,255,.1); color: #b14eff;
       border-radius: 3px; padding: .18rem .45rem;
     }
 
@@ -251,7 +251,7 @@
     }
 
     .wh-title { font-size: .68rem; font-weight: 800; color: #818cf8; letter-spacing: .08em; text-transform: uppercase; }
-    .wh-streak { font-size: .58rem; font-weight: 700; background: rgba(200,245,62,.1); color: #c8f53e; border-radius: 3px; padding: .1rem .35rem; }
+    .wh-streak { font-size: .58rem; font-weight: 700; background: rgba(177,78,255,.1); color: #b14eff; border-radius: 3px; padding: .1rem .35rem; }
 
     .wt {
       display: flex; align-items: center; gap: .5rem;
@@ -481,14 +481,14 @@
     .addr-btn {
       font-size: .62rem; font-weight: 800; letter-spacing: .05em;
       text-transform: uppercase;
-      background: rgba(200,245,62,.1); color: var(--accent);
+      background: rgba(177,78,255,.1); color: var(--accent);
       border-radius: 3px; padding: .18rem .45rem;
       animation: glow 2s ease-in-out infinite;
     }
 
     @keyframes glow {
-      0%,100% { box-shadow: 0 0 0 0 rgba(200,245,62,0); }
-      50%      { box-shadow: 0 0 0 3px rgba(200,245,62,.15); }
+      0%,100% { box-shadow: 0 0 0 0 rgba(177,78,255,0); }
+      50%      { box-shadow: 0 0 0 3px rgba(177,78,255,.15); }
     }
 
     .panel-checks { display: flex; flex-direction: column; gap: .55rem; margin-top: 1rem; }
@@ -576,7 +576,7 @@
   <nav>
     <div class="logo">
       <div class="logo-mark">
-        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#c8f53e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 8 6 12 14 4"/></svg>
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#b14eff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 8 6 12 14 4"/></svg>
       </div>
       Do It
     </div>
