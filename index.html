@@ -4,583 +4,664 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Do It — Daily To-Do App</title>
-  <meta name="description" content="A fast, private, offline-first daily to-do app. No account, no tracking. Just get things done." />
+  <meta name="description" content="The private, offline-first daily to-do app. No account. No cloud. Just get things done." />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --accent:      #4f46e5;
-      --accent-dark: #3730a3;
-      --accent-soft: #eef2ff;
-      --text:        #0f0f1a;
-      --text-2:      #4b4b6a;
-      --text-3:      #8888aa;
-      --bg:          #ffffff;
-      --bg-2:        #f8f8fc;
-      --border:      #e5e5f0;
-      --radius:      16px;
+      --bg:      #0b0b09;
+      --bg-2:    #141410;
+      --bg-3:    #1e1e18;
+      --border:  #272720;
+      --muted:   #666657;
+      --text:    #ede8dc;
+      --text-2:  #9a9680;
+      --accent:  #c8f53e;
+      --acc-2:   #a8d025;
+      --r:       4px;
     }
 
     html { scroll-behavior: smooth; }
 
     body {
-      font-family: 'Inter', system-ui, sans-serif;
-      color: var(--text);
-      background: var(--bg);
-      line-height: 1.6;
+      font-family: 'Syne', sans-serif;
+      background: var(--bg); color: var(--text);
       -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
 
     a { color: inherit; text-decoration: none; }
-    img { max-width: 100%; display: block; }
+    button { cursor: pointer; font: inherit; -webkit-tap-highlight-color: transparent; }
 
-    /* ─── Nav ───────────────────────────────────────────────── */
+    /* ─── NAV ───────────────────────────────────────────────── */
     nav {
-      position: sticky; top: 0; z-index: 100;
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: 54px; padding: 0 2rem;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 2rem; height: 64px;
-      background: rgba(255,255,255,.88);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      background: rgba(11,11,9,.9);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border);
     }
 
-    .nav-logo {
+    .logo {
       display: flex; align-items: center; gap: .55rem;
-      font-weight: 800; font-size: 1.1rem; letter-spacing: -.02em;
+      font-weight: 800; font-size: .9rem; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--accent);
     }
 
-    .nav-logo-icon {
-      width: 32px; height: 32px; border-radius: 8px;
-      background: var(--accent); display: grid; place-items: center;
+    .logo-mark {
+      width: 26px; height: 26px; border: 1.5px solid var(--accent);
+      border-radius: var(--r); display: grid; place-items: center;
     }
 
     .nav-links {
       display: flex; align-items: center; gap: 1.75rem;
-      font-size: .9rem; font-weight: 500; color: var(--text-2);
     }
 
-    .nav-links a:hover { color: var(--accent); }
+    .nav-link {
+      font-size: .72rem; font-weight: 700; letter-spacing: .09em;
+      text-transform: uppercase; color: var(--muted);
+      transition: color .15s; position: relative; padding-bottom: 2px;
+    }
+
+    .nav-link::after {
+      content: ''; position: absolute; bottom: 0; left: 0;
+      height: 1px; width: 0; background: var(--accent);
+      transition: width .2s ease;
+    }
+
+    .nav-link:hover { color: var(--text); }
+    .nav-link:hover::after { width: 100%; }
 
     .nav-cta {
-      background: var(--accent); color: #fff;
-      padding: .45rem 1.1rem; border-radius: 999px;
-      font-size: .88rem; font-weight: 600;
-      transition: background .15s, transform .15s;
+      font-size: .72rem; font-weight: 800; letter-spacing: .09em;
+      text-transform: uppercase; color: var(--bg);
+      background: var(--accent); padding: .42rem .9rem;
+      border-radius: var(--r); transition: background .15s;
     }
 
-    .nav-cta:hover { background: var(--accent-dark); transform: translateY(-1px); color: #fff; }
+    .nav-cta:hover { background: var(--acc-2); }
 
-    @media (max-width: 640px) {
-      .nav-links { display: none; }
+    @media (max-width: 600px) {
+      .nav-links .nav-link { display: none; }
       nav { padding: 0 1.25rem; }
     }
 
-    /* ─── Hero ──────────────────────────────────────────────── */
+    /* ─── HERO ──────────────────────────────────────────────── */
     .hero {
-      background: linear-gradient(160deg, #1e1b4b 0%, #312e81 40%, #4338ca 100%);
-      color: #fff;
-      padding: 5rem 2rem 0;
-      overflow: hidden;
-      position: relative;
+      min-height: 100vh; padding-top: 54px;
+      display: flex; align-items: center;
+      position: relative; overflow: hidden;
     }
 
+    /* Dot grid */
     .hero::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: radial-gradient(ellipse 60% 50% at 70% 30%, rgba(139,92,246,.35) 0%, transparent 70%);
+      content: ''; position: absolute; inset: 0;
+      background-image: radial-gradient(circle, #2c2c22 1px, transparent 1px);
+      background-size: 26px 26px; pointer-events: none;
+    }
+
+    /* Lime glow */
+    .hero::after {
+      content: ''; position: absolute;
+      top: 15%; left: 5%; width: 55vw; height: 60vh;
+      background: radial-gradient(ellipse, rgba(200,245,62,.055) 0%, transparent 65%);
       pointer-events: none;
     }
 
     .hero-inner {
-      max-width: 1100px; margin: 0 auto;
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 3rem; align-items: end;
+      position: relative; z-index: 1;
+      max-width: 1200px; margin: 0 auto; width: 100%;
+      padding: 5rem 2rem 4.5rem;
+      display: grid; grid-template-columns: 1fr 430px; gap: 5rem; align-items: center;
     }
 
-    .hero-badge {
-      display: inline-flex; align-items: center; gap: .4rem;
-      background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2);
-      border-radius: 999px; padding: .3rem .75rem;
-      font-size: .78rem; font-weight: 600; letter-spacing: .04em;
-      color: rgba(255,255,255,.85); margin-bottom: 1.25rem;
+    .hero-eyebrow {
+      display: flex; align-items: center; gap: .65rem;
+      font-size: .68rem; font-weight: 700; letter-spacing: .14em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 1.5rem;
+      animation: rise .7s cubic-bezier(.2,.8,.4,1) both;
     }
 
-    .hero-badge-dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: #34d399; flex-shrink: 0;
-      box-shadow: 0 0 0 3px rgba(52,211,153,.25);
-    }
+    .hero-eyebrow span { width: 20px; height: 1px; background: var(--accent); display: block; }
 
     .hero-title {
-      font-size: clamp(2.4rem, 5vw, 3.6rem);
-      font-weight: 900; line-height: 1.1;
-      letter-spacing: -.03em;
+      font-size: clamp(4.2rem, 9.5vw, 8rem);
+      font-weight: 800; line-height: .92; letter-spacing: -.045em;
+      animation: rise .8s .06s cubic-bezier(.2,.8,.4,1) both;
     }
 
-    .hero-title span { color: #a5b4fc; }
+    .hero-title em { font-style: normal; color: var(--text-2); }
+
+    .cursor {
+      display: inline-block; width: .1em; height: .82em;
+      background: var(--accent); margin-left: .04em;
+      vertical-align: middle;
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
 
     .hero-sub {
-      margin-top: 1.1rem;
-      font-size: 1.05rem; color: rgba(255,255,255,.72); max-width: 420px;
+      font-size: .97rem; color: var(--text-2); line-height: 1.7;
+      font-weight: 400; margin-top: 1.75rem; max-width: 400px;
+      animation: rise .8s .14s cubic-bezier(.2,.8,.4,1) both;
     }
 
-    .hero-actions {
-      display: flex; align-items: center; gap: .85rem;
-      flex-wrap: wrap; margin-top: 2rem;
+    .hero-btns {
+      display: flex; align-items: center; gap: .7rem;
+      flex-wrap: wrap; margin-top: 2.1rem;
+      animation: rise .8s .22s cubic-bezier(.2,.8,.4,1) both;
     }
 
-    .btn-primary {
-      display: inline-flex; align-items: center; gap: .5rem;
-      background: #fff; color: var(--accent);
-      padding: .75rem 1.5rem; border-radius: 999px;
-      font-weight: 700; font-size: .95rem;
-      transition: transform .15s, box-shadow .15s;
-      box-shadow: 0 4px 18px rgba(0,0,0,.2);
+    .btn-fill {
+      display: inline-flex; align-items: center; gap: .45rem;
+      background: var(--accent); color: var(--bg);
+      padding: .7rem 1.4rem; border-radius: var(--r);
+      font-weight: 800; font-size: .82rem; letter-spacing: .06em;
+      text-transform: uppercase; transition: background .15s, transform .15s;
     }
 
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,.28); }
+    .btn-fill:hover { background: var(--acc-2); transform: translateY(-1px); }
 
     .btn-ghost {
-      display: inline-flex; align-items: center; gap: .45rem;
-      color: rgba(255,255,255,.8); font-weight: 600; font-size: .92rem;
-      padding: .72rem 1.25rem; border-radius: 999px;
-      border: 1.5px solid rgba(255,255,255,.25);
-      transition: border-color .15s, color .15s, background .15s;
+      display: inline-flex; align-items: center; gap: .4rem;
+      color: var(--text-2); border: 1px solid var(--border);
+      padding: .7rem 1.1rem; border-radius: var(--r);
+      font-weight: 600; font-size: .82rem; letter-spacing: .05em;
+      text-transform: uppercase; transition: border-color .15s, color .15s;
     }
 
-    .btn-ghost:hover {
-      border-color: rgba(255,255,255,.55); color: #fff;
-      background: rgba(255,255,255,.08);
-    }
+    .btn-ghost:hover { border-color: var(--text-2); color: var(--text); }
 
     .hero-trust {
-      margin-top: 1.75rem;
-      font-size: .8rem; color: rgba(255,255,255,.45);
-      display: flex; align-items: center; gap: .5rem;
+      margin-top: 1.1rem; font-size: .7rem; color: var(--muted);
+      letter-spacing: .04em; display: flex; align-items: center; gap: .45rem;
+      animation: rise .7s .3s cubic-bezier(.2,.8,.4,1) both;
     }
 
-    /* ─── Browser mockup ────────────────────────────────────── */
-    .hero-mockup {
-      position: relative; align-self: end;
-      transform: translateY(2px);
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
-    .browser-frame {
-      background: #1e1b4b;
-      border-radius: 12px 12px 0 0;
-      border: 1.5px solid rgba(255,255,255,.12);
-      border-bottom: none;
-      overflow: hidden;
-      box-shadow: 0 -8px 40px rgba(0,0,0,.4);
+    /* ─── Mockup ─────────────────────────────────────────────── */
+    .mockup {
+      animation: rise .9s .08s cubic-bezier(.2,.8,.4,1) both;
+      position: relative;
     }
 
-    .browser-bar {
-      background: #13112e;
-      display: flex; align-items: center; gap: .5rem;
-      padding: .55rem .85rem;
+    .mockup-float {
+      position: absolute; top: -14px; right: -10px; z-index: 2;
+      background: var(--accent); color: var(--bg);
+      font-size: .65rem; font-weight: 800; letter-spacing: .07em;
+      text-transform: uppercase; padding: .3rem .65rem; border-radius: var(--r);
+      box-shadow: 0 4px 18px rgba(200,245,62,.35);
+      animation: float 3.5s ease-in-out infinite;
     }
 
-    .browser-dots { display: flex; gap: 5px; }
-    .browser-dots span {
-      width: 10px; height: 10px; border-radius: 50%;
-    }
-    .browser-dots span:nth-child(1) { background: #ff5f57; }
-    .browser-dots span:nth-child(2) { background: #febc2e; }
-    .browser-dots span:nth-child(3) { background: #28c840; }
-
-    .browser-url {
-      flex: 1; background: rgba(255,255,255,.07);
-      border-radius: 6px; padding: .28rem .75rem;
-      font-size: .72rem; color: rgba(255,255,255,.4);
-      font-family: monospace;
+    @keyframes float {
+      0%,100% { transform: translateY(0) rotate(-1deg); }
+      50%      { transform: translateY(-7px) rotate(0deg); }
     }
 
-    .browser-install-chip {
-      display: flex; align-items: center; gap: .3rem;
-      background: rgba(79,70,229,.35); border: 1px solid rgba(165,180,252,.3);
-      border-radius: 6px; padding: .22rem .55rem;
-      font-size: .68rem; color: #a5b4fc; font-weight: 600;
+    .win {
+      background: #0d1117; border: 1px solid #21262d;
+      border-radius: 10px; overflow: hidden;
+      box-shadow: 0 32px 80px rgba(0,0,0,.65), 0 0 0 1px rgba(255,255,255,.03);
     }
 
-    /* Mini app preview inside browser */
-    .app-preview {
-      background: #f5f5fb;
-      padding: 1rem;
-      min-height: 320px;
+    .win-bar {
+      display: flex; align-items: center; gap: .45rem;
+      padding: .6rem .85rem; background: #161b22;
+      border-bottom: 1px solid #21262d;
     }
 
-    .preview-header {
-      background: #fff;
-      border-radius: 10px;
-      padding: .65rem .9rem;
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot:nth-child(1) { background: #ff5f57; }
+    .dot:nth-child(2) { background: #febc2e; }
+    .dot:nth-child(3) { background: #28c840; }
+
+    .win-url {
+      margin-left: .4rem; flex: 1;
+      font-size: .65rem; color: #484f58; font-family: monospace;
+    }
+
+    .win-pill {
+      font-size: .6rem; font-weight: 700; letter-spacing: .05em;
+      text-transform: uppercase;
+      background: rgba(200,245,62,.1); color: #c8f53e;
+      border-radius: 3px; padding: .18rem .45rem;
+    }
+
+    .win-body {
+      padding: .85rem; background: #0d1117;
+    }
+
+    .wh {
       display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: .7rem;
-      box-shadow: 0 1px 6px rgba(0,0,0,.07);
+      background: #161b22; border: 1px solid #21262d; border-radius: 6px;
+      padding: .5rem .7rem; margin-bottom: .65rem;
     }
 
-    .preview-title {
-      font-size: .8rem; font-weight: 800; color: #1e1b4b;
-      letter-spacing: -.02em;
+    .wh-title { font-size: .68rem; font-weight: 800; color: #818cf8; letter-spacing: .08em; text-transform: uppercase; }
+    .wh-streak { font-size: .58rem; font-weight: 700; background: rgba(200,245,62,.1); color: #c8f53e; border-radius: 3px; padding: .1rem .35rem; }
+
+    .wt {
+      display: flex; align-items: center; gap: .5rem;
+      padding: .42rem .6rem; border-radius: 5px;
+      margin-bottom: .32rem; background: #161b22;
+      border: 1px solid #21262d; font-size: .68rem; color: #c9d1d9;
     }
 
-    .preview-tally {
-      font-size: .65rem; background: #eef2ff; color: #4f46e5;
-      border-radius: 999px; padding: .15rem .5rem; font-weight: 600;
+    .wt.done { opacity: .38; }
+
+    .wc {
+      width: 13px; height: 13px; border-radius: 50%;
+      border: 1.5px solid #30363d; flex-shrink: 0;
     }
 
-    .preview-task {
-      background: #fff; border-radius: 8px;
-      display: flex; align-items: center; gap: .55rem;
-      padding: .55rem .75rem; margin-bottom: .45rem;
-      box-shadow: 0 1px 4px rgba(0,0,0,.05);
-      font-size: .72rem; color: #1e1b4b;
-    }
-
-    .preview-task.done { opacity: .45; }
-
-    .preview-check {
-      width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0;
-      border: 1.5px solid #d1d5f0;
-    }
-
-    .preview-check.checked {
-      background: #4f46e5; border-color: #4f46e5;
+    .wc.done {
+      background: #818cf8; border-color: #818cf8;
       display: grid; place-items: center;
     }
 
-    .preview-check.checked::after {
-      content: '';
-      width: 5px; height: 3px;
+    .wc.done::after {
+      content: ''; width: 4px; height: 2.5px;
       border-left: 1.5px solid #fff; border-bottom: 1.5px solid #fff;
-      transform: rotate(-45deg) translate(0.5px, -0.5px);
-      display: block;
+      transform: rotate(-45deg) translate(.4px, -.4px);
     }
 
-    .preview-priority { width: 3px; height: 20px; border-radius: 2px; flex-shrink: 0; }
+    .wp { width: 3px; height: 16px; border-radius: 2px; flex-shrink: 0; }
 
-    .preview-due {
-      margin-left: auto; font-size: .62rem;
-      background: #fef3c7; color: #92400e;
-      border-radius: 4px; padding: .1rem .35rem; font-weight: 500;
+    .wb {
+      margin-left: auto; font-size: .55rem; font-weight: 700;
+      border-radius: 3px; padding: .08rem .3rem; flex-shrink: 0;
     }
 
-    .preview-due.accent { background: #eef2ff; color: #4f46e5; }
+    .wb.t { background: rgba(251,191,36,.12); color: #fbbf24; }
+    .wb.a { background: rgba(129,140,248,.1);  color: #818cf8; }
+    .wb.l { background: rgba(255,77,77,.1);    color: #ff6b6b; }
 
-    .preview-input {
-      background: #fff; border-radius: 8px;
-      display: flex; align-items: center; gap: .5rem;
-      padding: .55rem .75rem; margin-top: .6rem;
-      border: 1.5px dashed #d1d5f0;
-      font-size: .72rem; color: #9999bb;
+    .wi {
+      margin-top: .55rem; display: flex; align-items: center; gap: .4rem;
+      padding: .42rem .6rem; border-radius: 5px;
+      background: transparent; border: 1px dashed #21262d;
+      font-size: .65rem; color: #3d444d;
     }
 
-    @media (max-width: 860px) {
+    @media (max-width: 920px) {
       .hero-inner { grid-template-columns: 1fr; }
-      .hero-mockup { display: none; }
-      .hero { padding-bottom: 4rem; }
+      .mockup { display: none; }
+      .hero-inner { padding: 4rem 1.5rem 3.5rem; }
     }
 
-    /* ─── Stats strip ───────────────────────────────────────── */
-    .stats {
-      background: var(--bg-2);
+    /* ─── TICKER ─────────────────────────────────────────────── */
+    .ticker {
+      border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
-      padding: 1.75rem 2rem;
+      background: var(--bg-2); overflow: hidden;
+      padding: .7rem 0;
     }
 
-    .stats-inner {
-      max-width: 1100px; margin: 0 auto;
-      display: flex; align-items: center; justify-content: center;
-      gap: 3.5rem; flex-wrap: wrap;
+    .ticker-track {
+      display: flex; width: max-content;
+      animation: tick 32s linear infinite;
     }
 
-    .stat { text-align: center; }
-    .stat-num { font-size: 1.6rem; font-weight: 900; color: var(--accent); letter-spacing: -.03em; }
-    .stat-label { font-size: .8rem; color: var(--text-3); font-weight: 500; margin-top: .1rem; }
-
-    /* ─── Features ──────────────────────────────────────────── */
-    .section {
-      padding: 5rem 2rem;
+    .ticker-item {
+      display: flex; align-items: center; gap: .55rem;
+      padding: 0 2.2rem; white-space: nowrap;
+      font-size: .68rem; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--muted);
     }
 
-    .section-inner { max-width: 1100px; margin: 0 auto; }
+    .ticker-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
 
-    .section-label {
-      font-size: .75rem; font-weight: 700; letter-spacing: .1em;
-      color: var(--accent); text-transform: uppercase; margin-bottom: .6rem;
+    @keyframes tick {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
     }
 
-    .section-title {
-      font-size: clamp(1.8rem, 3.5vw, 2.5rem);
-      font-weight: 900; letter-spacing: -.03em; line-height: 1.15;
+    /* ─── FEATURES ───────────────────────────────────────────── */
+    .section { max-width: 1200px; margin: 0 auto; padding: 6rem 2rem; }
+
+    .eyebrow {
+      display: flex; align-items: center; gap: .6rem;
+      font-size: .68rem; font-weight: 700; letter-spacing: .14em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: .7rem;
     }
 
-    .section-sub {
-      color: var(--text-2); margin-top: .7rem; max-width: 500px; font-size: 1rem;
+    .eyebrow span { width: 18px; height: 1px; background: var(--accent); display: block; }
+
+    .h2 {
+      font-size: clamp(1.9rem, 3.8vw, 3rem);
+      font-weight: 800; letter-spacing: -.04em; line-height: 1.08;
     }
 
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.25rem;
-      margin-top: 3rem;
+    .feat-list { margin-top: 3.5rem; border-top: 1px solid var(--border); }
+
+    .feat-row {
+      display: grid; grid-template-columns: 3.2rem 1fr auto;
+      gap: 1.25rem; align-items: center;
+      padding: 1.3rem 0; border-bottom: 1px solid var(--border);
+      position: relative;
     }
 
-    @media (max-width: 860px) { .features-grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 540px) { .features-grid { grid-template-columns: 1fr; } }
-
-    .feature-card {
-      background: var(--bg-2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      transition: box-shadow .2s, transform .2s;
+    .feat-row::before {
+      content: ''; position: absolute; inset: 0 -2rem;
+      background: var(--bg-2); opacity: 0;
+      transition: opacity .2s; pointer-events: none;
     }
 
-    .feature-card:hover {
-      box-shadow: 0 8px 32px rgba(79,70,229,.10);
-      transform: translateY(-3px);
+    .feat-row:hover::before { opacity: 1; }
+
+    .feat-num {
+      font-size: .68rem; font-weight: 700; color: var(--muted);
+      letter-spacing: .05em; position: relative; z-index: 1;
     }
 
-    .feature-icon {
-      width: 42px; height: 42px; border-radius: 10px;
-      background: var(--accent-soft); display: grid; place-items: center;
-      margin-bottom: 1rem; color: var(--accent);
+    .feat-body { position: relative; z-index: 1; }
+
+    .feat-name {
+      font-size: 1rem; font-weight: 700; letter-spacing: -.02em;
+      transition: color .15s;
     }
 
-    .feature-title {
-      font-weight: 700; font-size: .95rem; margin-bottom: .35rem;
+    .feat-row:hover .feat-name { color: var(--accent); }
+
+    .feat-desc {
+      font-size: .82rem; color: var(--text-2); margin-top: .18rem;
+      font-weight: 400; line-height: 1.5;
     }
 
-    .feature-desc {
-      font-size: .875rem; color: var(--text-2); line-height: 1.55;
+    .feat-tag {
+      font-size: .62rem; font-weight: 700; letter-spacing: .09em;
+      text-transform: uppercase; color: var(--muted);
+      border: 1px solid var(--border); border-radius: 3px;
+      padding: .2rem .5rem; white-space: nowrap;
+      position: relative; z-index: 1;
     }
 
-    /* ─── Install section ───────────────────────────────────── */
-    .install-section {
+    @media (max-width: 580px) {
+      .feat-row { grid-template-columns: 2.2rem 1fr; }
+      .feat-tag { display: none; }
+    }
+
+    /* ─── STATS ──────────────────────────────────────────────── */
+    .stats-band {
       background: var(--bg-2);
       border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
     }
 
-    .install-tabs {
-      display: flex; gap: .5rem; margin-top: 2.5rem; flex-wrap: wrap;
+    .stats-inner {
+      max-width: 1200px; margin: 0 auto; padding: 3.5rem 2rem;
+      display: grid; grid-template-columns: repeat(4,1fr); gap: 2rem;
     }
 
-    .install-tab {
-      display: flex; align-items: center; gap: .45rem;
-      padding: .55rem 1.1rem; border-radius: 999px;
-      border: 1.5px solid var(--border);
-      background: var(--bg);
-      font-size: .875rem; font-weight: 600; color: var(--text-2);
-      cursor: pointer; transition: all .15s;
+    .stat { padding-left: 1.25rem; border-left: 2px solid var(--border); }
+    .stat:first-child { padding-left: 0; border-left: none; }
+
+    .stat-n {
+      font-size: 2.9rem; font-weight: 800; letter-spacing: -.05em;
+      color: var(--accent); line-height: 1;
     }
 
-    .install-tab.active {
-      background: var(--accent); color: #fff; border-color: var(--accent);
+    .stat-l {
+      font-size: .65rem; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--muted); margin-top: .3rem;
     }
 
-    .install-tab:not(.active):hover { border-color: var(--accent); color: var(--accent); }
-
-    .install-steps-wrap {
-      margin-top: 1.75rem;
+    @media (max-width: 600px) {
+      .stats-inner { grid-template-columns: repeat(2,1fr); }
+      .stat:nth-child(3) { padding-left: 0; border-left: none; }
     }
 
-    .install-steps { display: none; }
-    .install-steps.active { display: block; }
+    /* ─── INSTALL ────────────────────────────────────────────── */
+    .install-band { border-top: 1px solid var(--border); }
 
-    .install-steps ol {
-      list-style: none; display: flex; flex-direction: column; gap: .85rem;
+    .install-inner {
+      max-width: 1200px; margin: 0 auto; padding: 6rem 2rem;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: start;
     }
 
-    .install-steps li {
-      display: flex; align-items: flex-start; gap: .9rem;
+    .i-tabs { display: flex; gap: .35rem; margin-top: 2.25rem; flex-wrap: wrap; }
+
+    .i-tab {
+      font-size: .68rem; font-weight: 800; letter-spacing: .09em;
+      text-transform: uppercase; border-radius: var(--r);
+      border: 1px solid var(--border); color: var(--muted);
+      padding: .38rem .75rem; background: none;
+      transition: all .15s;
     }
 
-    .step-num {
-      width: 28px; height: 28px; border-radius: 50%;
-      background: var(--accent); color: #fff;
-      font-size: .78rem; font-weight: 800;
-      display: grid; place-items: center; flex-shrink: 0; margin-top: .1rem;
+    .i-tab.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+    .i-tab:not(.active):hover { border-color: var(--text-2); color: var(--text); }
+
+    .i-steps { display: none; margin-top: 2rem; flex-direction: column; gap: 1rem; }
+    .i-steps.active { display: flex; }
+
+    .i-step { display: flex; gap: .85rem; align-items: flex-start; }
+
+    .i-dot {
+      width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+      background: var(--accent); color: var(--bg);
+      font-size: .68rem; font-weight: 800;
+      display: grid; place-items: center; margin-top: .05rem;
     }
 
-    .step-text { font-size: .92rem; color: var(--text-2); padding-top: .25rem; }
-    .step-text strong { color: var(--text); font-weight: 600; }
+    .i-text { font-size: .88rem; color: var(--text-2); line-height: 1.62; font-weight: 400; }
+    .i-text strong { color: var(--text); font-weight: 700; }
 
-    .install-cta {
-      margin-top: 2rem;
-      display: inline-flex; align-items: center; gap: .5rem;
-      background: var(--accent); color: #fff;
-      padding: .8rem 1.75rem; border-radius: 999px;
-      font-weight: 700; font-size: .95rem;
-      transition: background .15s, transform .15s, box-shadow .15s;
-      box-shadow: 0 4px 16px rgba(79,70,229,.3);
+    .install-panel {
+      background: var(--bg-2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 1.75rem; margin-top: 2.25rem;
     }
 
-    .install-cta:hover {
-      background: var(--accent-dark); transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(79,70,229,.4);
+    .panel-label {
+      font-size: .62rem; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: .85rem;
     }
 
-    /* ─── Themes preview ────────────────────────────────────── */
-    .themes-row {
-      display: flex; gap: 1rem; margin-top: 2.5rem; flex-wrap: wrap;
+    .addr {
+      background: var(--bg-3); border: 1px solid var(--border);
+      border-radius: 6px; padding: .5rem .75rem;
+      display: flex; align-items: center; gap: .6rem; margin-bottom: 1rem;
     }
 
-    .theme-chip {
+    .addr-url { flex: 1; font-size: .7rem; color: var(--muted); font-family: monospace; }
+
+    .addr-btn {
+      font-size: .62rem; font-weight: 800; letter-spacing: .05em;
+      text-transform: uppercase;
+      background: rgba(200,245,62,.1); color: var(--accent);
+      border-radius: 3px; padding: .18rem .45rem;
+      animation: glow 2s ease-in-out infinite;
+    }
+
+    @keyframes glow {
+      0%,100% { box-shadow: 0 0 0 0 rgba(200,245,62,0); }
+      50%      { box-shadow: 0 0 0 3px rgba(200,245,62,.15); }
+    }
+
+    .panel-checks { display: flex; flex-direction: column; gap: .55rem; margin-top: 1rem; }
+
+    .pcheck {
       display: flex; align-items: center; gap: .55rem;
-      padding: .5rem 1rem; border-radius: 999px;
-      border: 1.5px solid var(--border); font-size: .82rem; font-weight: 600;
+      font-size: .78rem; color: var(--text-2);
     }
 
-    .theme-dot {
-      width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0;
+    .pcheck-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+
+    @media (max-width: 840px) {
+      .install-inner { grid-template-columns: 1fr; gap: 3rem; }
     }
 
-    /* ─── CTA banner ────────────────────────────────────────── */
-    .cta-banner {
-      background: linear-gradient(135deg, #312e81 0%, #4f46e5 60%, #7c3aed 100%);
-      color: #fff; text-align: center;
-      padding: 5rem 2rem;
+    /* ─── CTA ────────────────────────────────────────────────── */
+    .cta {
+      background: var(--accent); padding: 5.5rem 2rem; text-align: center;
     }
 
-    .cta-banner h2 {
-      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
-      font-weight: 900; letter-spacing: -.03em; margin-bottom: .75rem;
+    .cta-title {
+      font-size: clamp(2.2rem, 6vw, 4rem);
+      font-weight: 800; letter-spacing: -.05em; line-height: .95;
+      color: var(--bg);
     }
 
-    .cta-banner p {
-      color: rgba(255,255,255,.72); font-size: 1rem; margin-bottom: 2rem;
+    .cta-sub {
+      font-size: .92rem; color: rgba(11,11,9,.6);
+      margin-top: .8rem; font-weight: 400;
     }
 
-    .cta-actions {
-      display: flex; align-items: center; justify-content: center;
-      gap: .85rem; flex-wrap: wrap;
+    .cta-btn {
+      display: inline-flex; align-items: center; gap: .5rem;
+      margin-top: 2rem; background: var(--bg); color: var(--accent);
+      padding: .8rem 2rem; border-radius: var(--r);
+      font-weight: 800; font-size: .85rem; letter-spacing: .06em;
+      text-transform: uppercase; transition: transform .15s, box-shadow .15s;
+      box-shadow: 0 6px 24px rgba(0,0,0,.25);
     }
 
-    /* ─── Footer ────────────────────────────────────────────── */
+    .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 36px rgba(0,0,0,.35); }
+
+    /* ─── FOOTER ─────────────────────────────────────────────── */
     footer {
-      background: #0f0f1a; color: rgba(255,255,255,.5);
-      padding: 2.5rem 2rem;
+      background: var(--bg-2); border-top: 1px solid var(--border);
+      padding: 1.75rem 2rem;
+    }
+
+    .foot {
+      max-width: 1200px; margin: 0 auto;
       display: flex; align-items: center; justify-content: space-between;
       flex-wrap: wrap; gap: 1rem;
-      font-size: .82rem;
     }
 
-    .footer-logo {
-      font-weight: 800; color: rgba(255,255,255,.85); font-size: .9rem;
+    .foot-logo {
+      font-size: .82rem; font-weight: 800; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--accent);
     }
 
-    .footer-links { display: flex; gap: 1.5rem; }
-    .footer-links a:hover { color: rgba(255,255,255,.85); }
+    .foot-links {
+      display: flex; gap: 1.5rem;
+      font-size: .68rem; font-weight: 700; letter-spacing: .07em;
+      text-transform: uppercase; color: var(--muted);
+    }
+
+    .foot-links a:hover { color: var(--text); }
+
+    .foot-copy { font-size: .68rem; color: var(--muted); }
+
+    /* ─── SCROLL REVEAL ──────────────────────────────────────── */
+    .reveal {
+      opacity: 0; transform: translateY(20px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+
+    .reveal.in { opacity: 1; transform: translateY(0); }
+    .d1 { transition-delay: .1s; }
+    .d2 { transition-delay: .2s; }
+    .d3 { transition-delay: .3s; }
   </style>
 </head>
 <body>
 
-  <!-- ─── Nav ─────────────────────────────────────────────── -->
+  <!-- NAV -->
   <nav>
-    <div class="nav-logo">
-      <div class="nav-logo-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="20 6 9 17 4 12"/>
-        </svg>
+    <div class="logo">
+      <div class="logo-mark">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#c8f53e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 8 6 12 14 4"/></svg>
       </div>
       Do It
     </div>
     <div class="nav-links">
-      <a href="#features">Features</a>
-      <a href="#install">Install</a>
-      <a href="https://blackijin.github.io/do-it/" target="_blank" rel="noopener">Open App</a>
+      <a class="nav-link" href="#features">Features</a>
+      <a class="nav-link" href="#install">Install</a>
+      <a class="nav-link" href="https://github.com/Blackijin/do-it" target="_blank" rel="noopener">GitHub</a>
+      <a class="nav-cta" href="https://blackijin.github.io/do-it/" target="_blank" rel="noopener">Open App ↗</a>
     </div>
-    <a class="nav-cta" href="https://blackijin.github.io/do-it/" target="_blank" rel="noopener" id="installBtn">Install Free</a>
   </nav>
 
-  <!-- ─── Hero ─────────────────────────────────────────────── -->
+  <!-- HERO -->
   <section class="hero">
     <div class="hero-inner">
-      <div class="hero-content">
-        <div class="hero-badge">
-          <span class="hero-badge-dot"></span>
-          Free · Private · No account required
-        </div>
+      <div>
+        <div class="hero-eyebrow"><span></span>Private · Offline · Free forever</div>
         <h1 class="hero-title">
-          Do more.<br>
-          Stress <span>less.</span>
+          GET<br>
+          <em>THINGS</em><br>
+          DONE.<span class="cursor"></span>
         </h1>
         <p class="hero-sub">
-          A fast, offline-first daily to-do app. Works on your PC, phone, or tablet — right in the browser. No sign-up, no tracking, no fluff.
+          A daily to-do app built to get out of your way. No account, no cloud, no noise — just your tasks, your device, always available.
         </p>
-        <div class="hero-actions">
-          <a class="btn-primary" href="https://blackijin.github.io/do-it/" target="_blank" rel="noopener" id="heroInstallBtn">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Install for PC — Free
+        <div class="hero-btns">
+          <a class="btn-fill" href="https://blackijin.github.io/do-it/" target="_blank" rel="noopener" id="heroBtn">
+            Install Free
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           </a>
           <a class="btn-ghost" href="https://blackijin.github.io/do-it/" target="_blank" rel="noopener">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-            Try it live
+            Try in browser →
           </a>
         </div>
         <p class="hero-trust">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          Installs locally · Fully offline · Your data stays on your device
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          PC &nbsp;·&nbsp; Mac &nbsp;·&nbsp; iPhone &nbsp;·&nbsp; Android &nbsp;·&nbsp; No sign-up required
         </p>
       </div>
 
-      <!-- Browser mockup -->
-      <div class="hero-mockup">
-        <div class="browser-frame">
-          <div class="browser-bar">
-            <div class="browser-dots">
-              <span></span><span></span><span></span>
-            </div>
-            <div class="browser-url">blackijin.github.io/do-it</div>
-            <div class="browser-install-chip">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 15V3m0 12l-4-4m4 4l4-4M3 21h18"/></svg>
-              Install
-            </div>
+      <!-- App mockup -->
+      <div class="mockup">
+        <div class="mockup-float">Offline ready ✓</div>
+        <div class="win">
+          <div class="win-bar">
+            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            <div class="win-url">blackijin.github.io/do-it</div>
+            <div class="win-pill">Install</div>
           </div>
-          <div class="app-preview">
-            <div class="preview-header">
-              <div>
-                <div class="preview-title">Do It</div>
-              </div>
-              <div class="preview-tally">3 of 5 done</div>
+          <div class="win-body">
+            <div class="wh">
+              <div class="wh-title">Do It</div>
+              <div class="wh-streak">🔥 4-day streak</div>
             </div>
 
-            <div class="preview-task done">
-              <div class="preview-check checked"></div>
-              <div class="preview-priority" style="background:#ef4444"></div>
-              Buy groceries
+            <div class="wt done">
+              <div class="wc done"></div>
+              <div class="wp" style="background:#ef4444"></div>
+              Submit the project report
             </div>
-            <div class="preview-task done">
-              <div class="preview-check checked"></div>
-              <div class="preview-priority" style="background:#f59e0b"></div>
-              Morning run
+            <div class="wt done">
+              <div class="wc done"></div>
+              <div class="wp" style="background:#fbbf24"></div>
+              Morning workout
             </div>
-            <div class="preview-task">
-              <div class="preview-check"></div>
-              <div class="preview-priority" style="background:#4f46e5"></div>
-              Finish design brief
-              <div class="preview-due">Today</div>
-            </div>
-            <div class="preview-task">
-              <div class="preview-check"></div>
-              <div class="preview-priority" style="background:transparent; border: 1px dashed #d1d5f0"></div>
+            <div class="wt">
+              <div class="wc"></div>
+              <div class="wp" style="background:#ef4444"></div>
               Review pull requests
-              <div class="preview-due accent">Tomorrow</div>
+              <div class="wb t">Today</div>
             </div>
-            <div class="preview-task">
-              <div class="preview-check"></div>
-              <div class="preview-priority" style="background:transparent; border: 1px dashed #d1d5f0"></div>
-              Call the bank
+            <div class="wt">
+              <div class="wc"></div>
+              <div class="wp" style="background:#818cf8"></div>
+              Update documentation
+              <div class="wb a">+2d</div>
+            </div>
+            <div class="wt">
+              <div class="wc"></div>
+              <div class="wp" style="background:transparent;border:1px dashed #30363d"></div>
+              Plan Q3 goals
             </div>
 
-            <div class="preview-input">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              Add a new task…
+            <div class="wi">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add a task…
             </div>
           </div>
         </div>
@@ -588,255 +669,237 @@
     </div>
   </section>
 
-  <!-- ─── Stats ────────────────────────────────────────────── -->
-  <div class="stats">
-    <div class="stats-inner">
-      <div class="stat">
-        <div class="stat-num">100%</div>
-        <div class="stat-label">Offline capable</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num">0</div>
-        <div class="stat-label">Accounts required</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num">6</div>
-        <div class="stat-label">Built-in themes</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num">&lt;1s</div>
-        <div class="stat-label">Load time</div>
+  <!-- TICKER -->
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker-track" id="tickerTrack"></div>
+  </div>
+
+  <!-- FEATURES -->
+  <div id="features">
+    <div class="section">
+      <div class="eyebrow reveal"><span></span>Features</div>
+      <h2 class="h2 reveal d1">Built lean.<br>Works everywhere.</h2>
+
+      <div class="feat-list">
+        <div class="feat-row reveal">
+          <div class="feat-num">01</div>
+          <div class="feat-body">
+            <div class="feat-name">Priority Levels</div>
+            <div class="feat-desc">High, Medium, or Low — colour-coded flags so what matters most is always visible.</div>
+          </div>
+          <div class="feat-tag">Focus</div>
+        </div>
+        <div class="feat-row reveal">
+          <div class="feat-num">02</div>
+          <div class="feat-body">
+            <div class="feat-name">Due Dates</div>
+            <div class="feat-desc">Assign any task a date. Smart badges show "Today", "Tomorrow", or how many days overdue.</div>
+          </div>
+          <div class="feat-tag">Planning</div>
+        </div>
+        <div class="feat-row reveal">
+          <div class="feat-num">03</div>
+          <div class="feat-body">
+            <div class="feat-name">Instant Search</div>
+            <div class="feat-desc">Filter as you type — searches task names, notes, and subtasks all at once.</div>
+          </div>
+          <div class="feat-tag">Speed</div>
+        </div>
+        <div class="feat-row reveal">
+          <div class="feat-num">04</div>
+          <div class="feat-body">
+            <div class="feat-name">Drag to Reorder</div>
+            <div class="feat-desc">Grab the handle, place it where it belongs. Mouse on desktop, touch on mobile.</div>
+          </div>
+          <div class="feat-tag">Organise</div>
+        </div>
+        <div class="feat-row reveal">
+          <div class="feat-num">05</div>
+          <div class="feat-body">
+            <div class="feat-name">Task Notes</div>
+            <div class="feat-desc">Expand any task to add context — links, details, or whatever you need to remember.</div>
+          </div>
+          <div class="feat-tag">Detail</div>
+        </div>
+        <div class="feat-row reveal">
+          <div class="feat-num">06</div>
+          <div class="feat-body">
+            <div class="feat-name">Daily Streak</div>
+            <div class="feat-desc">Complete at least one task a day and watch your streak grow. Build the habit.</div>
+          </div>
+          <div class="feat-tag">Habit</div>
+        </div>
+        <div class="feat-row reveal">
+          <div class="feat-num">07</div>
+          <div class="feat-body">
+            <div class="feat-name">Recurring Tasks</div>
+            <div class="feat-desc">Set tasks to repeat on chosen days. They appear automatically every morning.</div>
+          </div>
+          <div class="feat-tag">Routine</div>
+        </div>
+        <div class="feat-row reveal">
+          <div class="feat-num">08</div>
+          <div class="feat-body">
+            <div class="feat-name">Focus Timer</div>
+            <div class="feat-desc">Start a countdown on any task. Work in sprints, see time remaining at a glance.</div>
+          </div>
+          <div class="feat-tag">Productivity</div>
+        </div>
+        <div class="feat-row reveal">
+          <div class="feat-num">09</div>
+          <div class="feat-body">
+            <div class="feat-name">6 Themes</div>
+            <div class="feat-desc">Light, Dark, Ocean, Sunset, Forest, Lavender — switch instantly, no reload needed.</div>
+          </div>
+          <div class="feat-tag">Personal</div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- ─── Features ─────────────────────────────────────────── -->
-  <section class="section" id="features">
-    <div class="section-inner">
-      <p class="section-label">Features</p>
-      <h2 class="section-title">Everything you need.<br>Nothing you don't.</h2>
-      <p class="section-sub">Built for speed and simplicity, with just enough power to keep you organised.</p>
-
-      <div class="features-grid">
-
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
-          </div>
-          <div class="feature-title">Priority levels</div>
-          <div class="feature-desc">Mark tasks High, Medium, or Low priority with a colour-coded flag. See what matters at a glance.</div>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          </div>
-          <div class="feature-title">Due dates</div>
-          <div class="feature-desc">Assign a due date to any task. Badges automatically show "Today", "Tomorrow", or days overdue.</div>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          </div>
-          <div class="feature-title">Search</div>
-          <div class="feature-desc">Instantly filter your tasks by keyword. Searches task names, notes, and subtasks as you type.</div>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-          </div>
-          <div class="feature-title">Drag to reorder</div>
-          <div class="feature-desc">Grab any task and drag it to where it belongs. Works with mouse on desktop and touch on mobile.</div>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-          </div>
-          <div class="feature-title">Task notes</div>
-          <div class="feature-desc">Expand any task to add rich notes — context, links, details — saved automatically as you type.</div>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          </div>
-          <div class="feature-title">Daily streak</div>
-          <div class="feature-desc">Build a completion streak by finishing at least one task each day. A badge tracks your momentum.</div>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.18-4.6"/></svg>
-          </div>
-          <div class="feature-title">Recurring tasks</div>
-          <div class="feature-desc">Set tasks to repeat on chosen days of the week. They appear automatically every morning.</div>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          </div>
-          <div class="feature-title">Focus timer</div>
-          <div class="feature-desc">Start a countdown timer on any task to work in focused sprints. See time remaining at a glance.</div>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
-          </div>
-          <div class="feature-title">Offline-first</div>
-          <div class="feature-desc">Works with no internet connection. Data is saved privately on your device — no cloud, no account.</div>
-        </div>
-
+  <!-- STATS -->
+  <div class="stats-band">
+    <div class="stats-inner">
+      <div class="stat reveal">
+        <div class="stat-n">100%</div>
+        <div class="stat-l">Offline capable</div>
       </div>
-
-      <!-- Themes row -->
-      <p class="section-label" style="margin-top: 3.5rem;">Themes</p>
-      <h3 style="font-size: 1.35rem; font-weight: 800; letter-spacing: -.02em;">6 built-in colour themes</h3>
-      <div class="themes-row">
-        <div class="theme-chip"><div class="theme-dot" style="background:#4f46e5"></div>Light</div>
-        <div class="theme-chip"><div class="theme-dot" style="background:#818cf8; border: 2px solid #312e81"></div>Dark</div>
-        <div class="theme-chip"><div class="theme-dot" style="background:#0284c7"></div>Ocean</div>
-        <div class="theme-chip"><div class="theme-dot" style="background:#ea580c"></div>Sunset</div>
-        <div class="theme-chip"><div class="theme-dot" style="background:#16a34a"></div>Forest</div>
-        <div class="theme-chip"><div class="theme-dot" style="background:#9333ea"></div>Lavender</div>
+      <div class="stat reveal d1">
+        <div class="stat-n">0</div>
+        <div class="stat-l">Accounts needed</div>
+      </div>
+      <div class="stat reveal d2">
+        <div class="stat-n">6</div>
+        <div class="stat-l">Built-in themes</div>
+      </div>
+      <div class="stat reveal d3">
+        <div class="stat-n">&lt;1s</div>
+        <div class="stat-l">Load time</div>
       </div>
     </div>
-  </section>
+  </div>
 
-  <!-- ─── Install ───────────────────────────────────────────── -->
-  <section class="section install-section" id="install">
-    <div class="section-inner">
-      <p class="section-label">Install</p>
-      <h2 class="section-title">Install in 3 clicks.<br>No app store needed.</h2>
-      <p class="section-sub">Do It is a Progressive Web App (PWA) — install it directly from your browser and it works like a native app.</p>
+  <!-- INSTALL -->
+  <div class="install-band" id="install">
+    <div class="install-inner">
+      <div>
+        <div class="eyebrow reveal"><span></span>Install</div>
+        <h2 class="h2 reveal d1">3 clicks.<br>That's it.</h2>
+        <p style="margin-top:.75rem;font-size:.88rem;color:var(--text-2);font-weight:400;line-height:1.65;" class="reveal d2">
+          Do It is a Progressive Web App. Install it from your browser — no app store, no download page, no waiting. It runs like a native app and works fully offline.
+        </p>
 
-      <div class="install-tabs">
-        <button class="install-tab active" data-tab="chrome">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="21.17" y1="8" x2="12" y2="8"/><line x1="3.95" y1="6.06" x2="8.54" y2="14"/><line x1="10.88" y1="21.94" x2="15.46" y2="14"/></svg>
-          Chrome / Edge
-        </button>
-        <button class="install-tab" data-tab="firefox">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-          Firefox
-        </button>
-        <button class="install-tab" data-tab="mobile">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
-          Mobile
-        </button>
+        <div class="i-tabs reveal d2">
+          <button class="i-tab active" data-tab="chrome">Chrome / Edge</button>
+          <button class="i-tab" data-tab="firefox">Firefox</button>
+          <button class="i-tab" data-tab="mobile">Mobile</button>
+        </div>
+
+        <div class="i-steps active" id="tab-chrome">
+          <div class="i-step"><div class="i-dot">1</div><div class="i-text">Click <strong>Open App</strong> — it opens in Chrome or Edge.</div></div>
+          <div class="i-step"><div class="i-dot">2</div><div class="i-text">Look for the <strong>install icon (⊕)</strong> in the right side of the address bar.</div></div>
+          <div class="i-step"><div class="i-dot">3</div><div class="i-text">Click it and select <strong>Install</strong>. Done — it launches like any desktop app.</div></div>
+        </div>
+        <div class="i-steps" id="tab-firefox">
+          <div class="i-step"><div class="i-dot">1</div><div class="i-text">Click <strong>Open App</strong> to open in Firefox.</div></div>
+          <div class="i-step"><div class="i-dot">2</div><div class="i-text">Click the <strong>three-dot menu (⋮)</strong> in the top-right corner.</div></div>
+          <div class="i-step"><div class="i-dot">3</div><div class="i-text">Select <strong>"Install"</strong> or <strong>"Add to Home Screen"</strong>.</div></div>
+        </div>
+        <div class="i-steps" id="tab-mobile">
+          <div class="i-step"><div class="i-dot">1</div><div class="i-text">Open the app on <strong>Chrome (Android)</strong> or <strong>Safari (iPhone)</strong>.</div></div>
+          <div class="i-step"><div class="i-dot">2</div><div class="i-text"><strong>Android:</strong> tap the install banner → <strong>"Add to Home Screen"</strong>. <strong>iPhone:</strong> tap Share → <strong>"Add to Home Screen"</strong>.</div></div>
+          <div class="i-step"><div class="i-dot">3</div><div class="i-text">Tap <strong>Add</strong>. The icon appears on your home screen, works offline from now on.</div></div>
+        </div>
+
+        <a class="btn-fill" href="https://blackijin.github.io/do-it/" target="_blank" rel="noopener" style="margin-top:2rem;display:inline-flex;">
+          Open the App ↗
+        </a>
       </div>
 
-      <div class="install-steps-wrap">
-        <div class="install-steps active" id="tab-chrome">
-          <ol>
-            <li>
-              <div class="step-num">1</div>
-              <div class="step-text">Click <strong>Open App</strong> — it opens in Chrome or Edge.</div>
-            </li>
-            <li>
-              <div class="step-num">2</div>
-              <div class="step-text">Look for the <strong>install icon</strong> (⊕ or download arrow) in the address bar on the right-hand side.</div>
-            </li>
-            <li>
-              <div class="step-num">3</div>
-              <div class="step-text">Click it and select <strong>"Install"</strong>. Do It opens in its own window, just like a desktop app.</div>
-            </li>
-          </ol>
-        </div>
+      <!-- Install panel -->
+      <div class="reveal d1">
+        <div class="install-panel">
+          <div class="panel-label">Address bar — Chrome / Edge</div>
+          <div class="addr">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <div class="addr-url">blackijin.github.io/do-it</div>
+            <div class="addr-btn">⊕ Install</div>
+          </div>
+          <div style="font-size:.78rem;color:var(--text-2);line-height:1.6;font-weight:400;">
+            Chrome and Edge detect Do It is a PWA and show an install button in the address bar. One click — no store, no download.
+          </div>
 
-        <div class="install-steps" id="tab-firefox">
-          <ol>
-            <li>
-              <div class="step-num">1</div>
-              <div class="step-text">Click <strong>Open App</strong> to open in Firefox.</div>
-            </li>
-            <li>
-              <div class="step-num">2</div>
-              <div class="step-text">Click the <strong>three-dot menu</strong> (⋮) in the top-right corner.</div>
-            </li>
-            <li>
-              <div class="step-num">3</div>
-              <div class="step-text">Select <strong>"Install"</strong> or <strong>"Add to Home Screen"</strong>. Firefox will create a desktop shortcut.</div>
-            </li>
-          </ol>
-        </div>
-
-        <div class="install-steps" id="tab-mobile">
-          <ol>
-            <li>
-              <div class="step-num">1</div>
-              <div class="step-text">Open the app link on your phone in <strong>Chrome (Android)</strong> or <strong>Safari (iPhone)</strong>.</div>
-            </li>
-            <li>
-              <div class="step-num">2</div>
-              <div class="step-text"><strong>Android:</strong> Tap the install banner or menu → <strong>"Add to Home Screen"</strong>.<br><strong>iPhone:</strong> Tap the Share icon → <strong>"Add to Home Screen"</strong>.</div>
-            </li>
-            <li>
-              <div class="step-num">3</div>
-              <div class="step-text">Tap <strong>Add</strong>. The app appears on your home screen and works fully offline.</div>
-            </li>
-          </ol>
+          <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border);">
+            <div class="panel-label">After installing</div>
+            <div class="panel-checks">
+              <div class="pcheck"><div class="pcheck-dot"></div>Launches from your taskbar or Start menu</div>
+              <div class="pcheck"><div class="pcheck-dot"></div>Works fully offline — no internet needed</div>
+              <div class="pcheck"><div class="pcheck-dot"></div>Your data stays only on your device</div>
+              <div class="pcheck"><div class="pcheck-dot"></div>Uninstall anytime from OS settings</div>
+            </div>
+          </div>
         </div>
       </div>
-
-      <a class="install-cta" href="https://blackijin.github.io/do-it/" target="_blank" rel="noopener">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        Open the App
-      </a>
     </div>
+  </div>
+
+  <!-- CTA -->
+  <section class="cta">
+    <h2 class="cta-title">Stop planning.<br>Start doing.</h2>
+    <p class="cta-sub">Free. Private. No account. Works offline. Open it and go.</p>
+    <a class="cta-btn" href="https://blackijin.github.io/do-it/" target="_blank" rel="noopener">
+      Open Do It
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+    </a>
   </section>
 
-  <!-- ─── CTA Banner ────────────────────────────────────────── -->
-  <section class="cta-banner">
-    <h2>Ready to get things done?</h2>
-    <p>Free forever. No account. Works offline. Start in seconds.</p>
-    <div class="cta-actions">
-      <a class="btn-primary" href="https://blackijin.github.io/do-it/" target="_blank" rel="noopener">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Install Do It — Free
-      </a>
-    </div>
-  </section>
-
-  <!-- ─── Footer ────────────────────────────────────────────── -->
+  <!-- FOOTER -->
   <footer>
-    <div class="footer-logo">Do It</div>
-    <div>Built with ♥ · Private &amp; offline-first</div>
-    <div class="footer-links">
-      <a href="https://blackijin.github.io/do-it/" target="_blank" rel="noopener">Open App</a>
-      <a href="https://github.com/Blackijin/do-it" target="_blank" rel="noopener">GitHub</a>
+    <div class="foot">
+      <div class="foot-logo">Do It</div>
+      <div class="foot-links">
+        <a href="https://blackijin.github.io/do-it/" target="_blank" rel="noopener">App</a>
+        <a href="https://github.com/Blackijin/do-it" target="_blank" rel="noopener">GitHub</a>
+        <a href="#features">Features</a>
+        <a href="#install">Install</a>
+      </div>
+      <div class="foot-copy">Private · Offline-first · Free forever</div>
     </div>
   </footer>
 
   <script>
-    // Install tab switching
-    document.querySelectorAll('.install-tab').forEach(tab => {
+    // Ticker
+    const items = ['Priority Levels','Due Dates','Instant Search','Drag to Reorder','Task Notes','Daily Streak','Recurring Tasks','Focus Timer','6 Themes','Offline First','No Account','Free Forever'];
+    const t = document.getElementById('tickerTrack');
+    const html = items.map(i => `<div class="ticker-item"><span class="ticker-dot"></span>${i}</div>`).join('');
+    t.innerHTML = html + html;
+
+    // Scroll reveal
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); } });
+    }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+    // Install tabs
+    document.querySelectorAll('.i-tab').forEach(tab => {
       tab.addEventListener('click', () => {
-        document.querySelectorAll('.install-tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.install-steps').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.i-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.i-steps').forEach(s => s.classList.remove('active'));
         tab.classList.add('active');
         document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
       });
     });
 
-    // Capture PWA install prompt and wire up install buttons
-    let _installPrompt = null;
-
+    // PWA install prompt
+    let _p = null;
     window.addEventListener('beforeinstallprompt', e => {
-      e.preventDefault();
-      _installPrompt = e;
-      document.querySelectorAll('#installBtn, #heroInstallBtn').forEach(btn => {
-        btn.addEventListener('click', async ev => {
-          if (!_installPrompt) return;
-          ev.preventDefault();
-          _installPrompt.prompt();
-          const { outcome } = await _installPrompt.userChoice;
-          if (outcome === 'accepted') _installPrompt = null;
-        }, { once: true });
-      });
+      e.preventDefault(); _p = e;
+      document.getElementById('heroBtn')?.addEventListener('click', async ev => {
+        if (!_p) return;
+        ev.preventDefault(); _p.prompt();
+        const { outcome } = await _p.userChoice;
+        if (outcome === 'accepted') _p = null;
+      }, { once: true });
     });
   </script>
 </body>
